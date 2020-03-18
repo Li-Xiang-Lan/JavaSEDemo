@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.o2o.dao.ProductCategoryDao">
+
+    <insert id="insertProductCategory" parameterType="java.util.List">
+        insert into tb_product_category(product_category_name,priority,create_time,shop_id)
+        values
+        <foreach collection="list" item="productCategory" index="index" separator=",">
+            (#{productCategory.productCategoryName},
+            #{productCategory.priority},
+            #{productCategory.createTime},
+            #{productCategory.shopId}
+            )
+        </foreach>
+    </insert>
+
+    <select id="queryProductCategoryListByShopId" resultType="com.demo.o2o.entity.ProductCategory" parameterType="long">
+        select * from tb_product_category where shop_id=#{shopId}
+    </select>
+
+    <delete id="deleteProductCategory" parameterType="long">
+        delete from tb_product_category
+        where id=#{productCategoryId} and shop_id=#{shopId}
+    </delete>
+
+    <insert id="insertProduct" parameterType="com.demo.o2o.entity.Product" useGeneratedKeys="true" keyProperty="productId">
+        insert into
+        tb_product(product_name,product_desc,
+        img_addr,normal_price,
+        promotion_price,priority,
+        create_time,last_time,
+        enable_status,product_category_id,
+        shop_id)
+        values (#{productName},#{productDesc},
+        #{imgAddr},#{normalPrice},
+        #{promotionPrice},#{priority},
+        #{createTime},#{lastTime},
+        #{enableStatus},#{productCategoryId},
+        #{shopId})
+    </insert>
+
+    <insert id="insertProductImg" parameterType="java.util.List">
+        insert into tb_product_img(addr,img_desc,priority,create_time,product_id)
+        values
+        <foreach collection="list" item="productImg" index="index" separator=",">
+            (#{productImg.addr},
+            #{productImg.imgDesc},
+            #{productImg.priority},
+            #{productImg.createTime},
+            #{productImg.productId})
+        </foreach>
+    </insert>
+</mapper>

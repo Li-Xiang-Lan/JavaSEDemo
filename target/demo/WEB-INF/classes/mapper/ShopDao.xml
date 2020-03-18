@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.o2o.dao.ShopDao">
+    <resultMap id="shopMap" type="com.demo.o2o.entity.Shop">
+        <id column="shop_id" property="shopId"/>
+        <result column="shop_name" property="shopName"/>
+        <result column="shop_desc" property="shopDesc"/>
+        <result column="addr" property="addr"/>
+        <result column="phone" property="phone"/>
+        <result column="img" property="img"/>
+        <result column="priority" property="priority"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_time" property="lastTime"/>
+        <result column="enable_status" property="enableStatus"/>
+        <result column="advice" property="advice"/>
+        <association property="area" column="area_id" javaType="com.demo.o2o.entity.Area">
+            <id column="area_id" property="areaId"/>
+            <result column="area_name" property="areaName"/>
+        </association>
+        <association property="shopCategory" column="category_id" javaType="com.demo.o2o.entity.ShopCategory">
+            <id column="category_id" property="categoryId"/>
+            <result column="category_name" property="categoryName"/>
+        </association>
+        <association property="owner" column="user_id" javaType="com.demo.o2o.entity.PersonInfo">
+            <id column="user_id" property="userId"/>
+            <result column="name" property="Name"/>
+        </association>
+    </resultMap>
+
+    <select id="queryShopList" resultMap="shopMap">
+         SELECT
+        s.shop_id,
+        s.shop_name,
+        s.shop_desc,
+        s.addr,
+        s.phone,
+        s.img,
+        s.priority,
+        s.create_time,
+        s.last_time,
+        s.enable_status,
+        s.advice,
+        a.area_id,
+        a.area_name,
+        sc.category_id,
+        sc.category_name
+        FROM
+        tb_shop s,
+        tb_area a,
+        tb_shop_category sc
+        <where>
+            <if test="shopCondition.categoryId!=null">
+                and s.shop_category_id=#{shopCondition.categoryId}
+            </if>
+            <if test="shopCondition.areaId!=null">
+                and s.area_id=#{shopCondition.areaId}
+            </if>
+            <if test="shopCondition.shopName!=null">
+                and s.shop_name like '%${shopCondition.shopName}%'
+            </if>
+            <if test="shopCondition.enableStatus!=null">
+                and s.enable_status=#{shopCondition.enableStatus}
+            </if>
+            <if test="shopCondition.userId!=null">
+                and s.owner_id=#{shopCondition.userId}
+            </if>
+        </where>
+        order by
+        priority desc
+        limit #{index},#{pageSize}
+    </select>
+
+    <select id="getShopById" resultMap="shopMap" parameterType="Long">
+          SELECT
+        s.shop_id,
+        s.shop_name,
+        s.shop_desc,
+        s.addr,
+        s.phone,
+        s.img,
+        s.priority,
+        s.create_time,
+        s.last_time,
+        s.enable_status,
+        s.advice,
+        a.area_id,
+        a.area_name,
+        sc.category_id,
+        sc.category_name
+        FROM
+        tb_shop s,
+        tb_area a,
+        tb_shop_category sc
+        WHERE
+        s.area_id=a.area_id
+        AND
+        s.shop_category_id=sc.category_id
+        AND
+        s.shop_id=#{shopId}
+    </select>
+
+
+    <insert id="insertShop">
+            insert into
+            tb_shop(owner_id,area_id,shop_category_id,shop_name,shop_desc,addr,phone,
+            img,create_time,last_time)
+            values (#{userId},#{areaId},#{categoryId}, #{shopName}, #{shopDesc},
+             #{addr}, #{phone}, #{img} , #{createTime}, #{lastTime})
+    </insert>
+
+
+    <update id="updateShop" parameterType="com.demo.o2o.entity.Shop">
+        update tb_shop
+        <set>
+            <if test="shopName!=null">shop_name=#{shopName},</if>
+            <if test="shopDesc!=null">shop_desc=#{shopDesc},</if>
+            <if test="addr!=null">addr=#{addr},</if>
+            <if test="phone!=null">phone=#{phone},</if>
+            <if test="img!=null">img=#{img},</if>
+            <if test="priority!=null">priority=#{priority},</if>
+            <if test="lastTime!=null">last_time=#{lastTime},</if>
+            <if test="enableStatus!=null">enable_status=#{enableStatus},</if>
+            <if test="area!=null">area_id=#{area.areaId}</if>
+            <if test="shopCategory!=null">category_id=#{shopCategory.shopCategoryId}</if>
+        </set>
+        where shop_id=#{shopId}
+    </update>
+</mapper>

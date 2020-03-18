@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.o2o.dao.ShopCategoryDao">
+    <select id="queryShopCategory" resultType="com.demo.o2o.entity.ShopCategory">
+        select * from tb_shop_category
+        <where>
+            <if test="parentId!=-1">
+                parent_id=#{parentId}
+            </if>
+        </where>
+        order by
+        priority desc
+    </select>
+
+    <insert id="insertCategory">
+        insert into tb_shop_category(category_name,category_desc ,img,create_time,last_time)
+        values (#{categoryName},#{categoryDesc},#{img},#{createTime},#{lastTime})
+    </insert>
+
+</mapper>
